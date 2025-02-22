@@ -1,28 +1,27 @@
 const express = require("express");
-const { Builder, By, until } = require("selenium-webdriver");
+const puppeteer = require("puppeteer");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.get("/", async (req, res) => {
-    let driver;
+    let browser;
     try {
-        driver = await new Builder().forBrowser("chrome").build();
-        await driver.get("https://example.com");
+        browser = await puppeteer.launch({ headless: "new" }); // Runs in headless mode
+        const page = await browser.newPage();
+        await page.goto("https://example.com");
 
         // Example: Get the page title
-        let title = await driver.getTitle();
+        let title = await page.title();
 
         res.json({ title });
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (driver) {
-            await driver.quit();
-        }
+        if (browser) await browser.close();
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
