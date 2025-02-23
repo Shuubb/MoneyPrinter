@@ -7,7 +7,11 @@ const PORT = process.env.PORT || 3000;
 app.get("/", async (req, res) => {
     let browser;
     try {
-        browser = await puppeteer.launch({ headless: "new" }); // Runs in headless mode
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
+
         const page = await browser.newPage();
         await page.goto("https://example.com");
 
